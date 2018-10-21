@@ -107,23 +107,72 @@ public class Main {
 
 
     public static void main(String[] args) {
-        int n = 1000000;
+        int n = 5000000;
         try {
             int[] intArray = new int[] {123456, 234567, 345678, 456789, 567890, 987654, 876543, 765432, 10, 500};
 
 
+
             double orderedSeconds = insertRecords(n, false, true, true);
             System.out.println("Seconds to insert " + n + " ordered records: " + orderedSeconds);
-
-            double queryTotal = 0.0;
+            double query1Total = 0.0;
             for(int i = 0; i < intArray.length; i++){
-                queryTotal += queryTable(intArray[i], intArray[i]);
+                query1Total += queryTable(intArray[i], 0);
             }
-            double queryAvg = queryTotal/intArray.length;
-            System.out.println("Seconds to query " + n + " ordered records with two indexes: " + queryAvg);
+            double query1Avg = query1Total/intArray.length;
+            System.out.println("Seconds to query a=__ ordered records with B indexes: " + query1Avg);
 
-           // double randomSeconds = insertRecords(n, true, true, true);
-           // System.out.println("Seconds to insert " + n + " random records: " + randomSeconds);
+
+            double query2Total = 0.0;
+            for(int i = 0; i < intArray.length; i++){
+                query2Total += queryTable(0, intArray[i]);
+            }
+            double query2Avg = query2Total/intArray.length;
+            System.out.println("Seconds to query b=__ ordered records with B indexes: " + query2Avg);
+
+
+
+            double query3Total = 0.0;
+            for(int i = 0; i < intArray.length; i++){
+                query3Total += queryTable(intArray[i], intArray[i]);
+            }
+            double query3Avg = query3Total/intArray.length;
+            System.out.println("Seconds to query a=__ and b=__ ordered records with B indexes: " + query3Avg);
+
+
+
+/********************************************************************************************************************/
+/*     RANDOM INSERTS
+*/
+
+            double randomSeconds = insertRecords(n, true, true, true);
+            System.out.println("Seconds to insert " + n + " random records: " + randomSeconds);
+
+             query1Total = 0.0;
+            for(int i = 0; i < intArray.length; i++){
+                query1Total += queryTable(intArray[i], 0);
+            }
+             query1Avg = query1Total/intArray.length;
+            System.out.println("Seconds to query a=__ random records with B indexes: " + query1Avg);
+
+
+             query2Total = 0.0;
+            for(int i = 0; i < intArray.length; i++){
+                query2Total += queryTable(0, intArray[i]);
+            }
+             query2Avg = query2Total/intArray.length;
+            System.out.println("Seconds to query b=__  random records with B indexes: " + query2Avg);
+
+
+
+             query3Total = 0.0;
+            for(int i = 0; i < intArray.length; i++){
+                query3Total += queryTable(intArray[i], intArray[i]);
+            }
+             query3Avg = query3Total/intArray.length;
+            System.out.println("Seconds to query a=__ AND b=__ random records with B indexes: " + query3Avg);
+
+            System.out.println("Query time average over " + intArray.length + " passes");
 
         }catch (SQLException e) {System.out.println("SQLException: " + e);}
     }
