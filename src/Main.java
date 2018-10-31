@@ -47,27 +47,40 @@ public class Main {
     private static double insertRecords(int recordCount, boolean random, boolean indexA, boolean indexB) throws SQLException{
         Connection conn1 = DriverManager.getConnection("jdbc:postgresql://localhost/", "postgres", "postgres");
         Statement st1 = conn1.createStatement();
-        st1.execute("DROP TABLE IF EXISTS benchmark");
-        st1.execute("CREATE TABLE IF NOT EXISTS benchmark (theKey numeric PRIMARY KEY, columnA numeric, columnB numeric, filler char(247))");
-        if(indexA){
-            st1.execute("CREATE INDEX idx_benchmark_colA ON benchmark(columnA)");
-        }
-        if(indexB){
-            st1.execute("CREATE INDEX idx_benchmark_colB ON benchmark(columnB)");
-        }
+        st1.execute("DROP TABLE IF EXISTS testdata");
+        st1.execute("CREATE TABLE IF NOT EXISTS testdata (pk integer primary key,ht integer,ot integer,hund integer,ten integer,filler varchar(255));");
 
-        PreparedStatement pst1 = conn1.prepareStatement("insert into benchmark values (?, ?, ?, ?)");
+
+        PreparedStatement pst1 = conn1.prepareStatement("insert into testdata values (?, ?, ?, ?, ?, ?)");
 
         Integer[] pkArrayOrdered = new Integer[recordCount];
         for(int i = 0; i < recordCount; i++){
             pkArrayOrdered[i] = i+1;
         }
 
-        Integer[] pkArrayRandom = new Integer[recordCount];
-        for(int i = 0; i < recordCount; i++){
-            pkArrayRandom[i] = i+1;
+        Integer[] arrayHT = new Integer[100000];
+        for(int i = 0; i < 100000; i++){
+            arrayHT[i] = i+1;
         }
-        Collections.shuffle(Arrays.asList(pkArrayRandom));
+
+        Integer[] arrayTT = new Integer[10000];
+        System.arraycopy(arrayHT, 0, arrayTT, 0, 9999);
+
+        Integer[] arrayOT = new Integer[1000];
+        System.arraycopy(arrayTT, 0, arrayOT, 0, 999);
+
+        Integer[] arrayHUND = new Integer[100];
+        System.arraycopy(arrayOT, 0, arrayHUND, 0, 99);
+
+        Integer[] arrayTEN = new Integer[10];
+        System.arraycopy(arrayHUND, 0, arrayTEN, 0, 9);
+
+
+        Collections.shuffle(Arrays.asList(arrayHT));
+        Collections.shuffle(Arrays.asList(arrayTT));
+        Collections.shuffle(Arrays.asList(arrayOT));
+        Collections.shuffle(Arrays.asList(arrayHUND));
+        Collections.shuffle(Arrays.asList(arrayTEN));
 
         String[] fillerArray = new String[5];
         fillerArray[0] = "dasloghwg";
@@ -80,16 +93,13 @@ public class Main {
 
         for(int i = 0; i < recordCount; i++){
             pst1.clearParameters();
-
-            if(random) {
-                pst1.setInt(1, pkArrayRandom[i]);  //theKey
-            }
-            else{
-                pst1.setInt(1, pkArrayOrdered[i]);  //theKey
-            }
-            pst1.setInt(2, pkArrayRandom[i]); //columnA
-            pst1.setInt(3, pkArrayRandom[recordCount-1-i]); //columnB
-            pst1.setString(4, fillerArray[getRandomNumberInRange(0,4)]); //filler
+            pst1.setInt(1, pkArrayOrdered[i]);
+            pst1.setInt(2, arrayHT[i%100000]);
+            pst1.setInt(3, arrayTT[i%10000]);
+            pst1.setInt(4, arrayOT[i%1000]);
+            pst1.setInt(5, arrayHUND[i%100]);
+            pst1.setInt(6, arrayTEN[i%10]);
+            pst1.setString(7, fillerArray[getRandomNumberInRange(0,4)]);
 
             pst1.addBatch();
             if((i+1)%50000 == 0){
