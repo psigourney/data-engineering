@@ -64,6 +64,7 @@ public class hw8 {
 
         int recordCount = 5000000;
 
+
         Connection conn1 = DriverManager.getConnection("jdbc:postgresql://localhost/", "postgres", "postgres");
         Statement st1 = conn1.createStatement();
         st1.execute("DROP TABLE IF EXISTS testdata");
